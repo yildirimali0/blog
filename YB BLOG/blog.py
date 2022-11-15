@@ -268,22 +268,20 @@ def search():
 
 
 #Şifre Değiştirme
-@app.route("/password_change", methods=["GET", "POST"])
+@app.route("/password_change/<string:id>", methods=["GET","POST"])
 @login_required
-def password_change():
+def password_change(id):
     form = PasswordForm(request.form)
     if request.method=="POST" and form.validate():
-        new_password=sha256_crypt.encrypt(form.new_password.data)
+        new_password=sha256_crypt.encrypt(form.new_passwordi.data)
         query="Update users Set password=%s where id=%s"
         cursor=mysql.connection.cursor()
         cursor.execute(query,(new_password,id))
         mysql.connection.commit()
         flash("Parolanız Başarıyla Güncellenmiştir","success")
-        return redirect(url_for("password_change"))
-
-
-
-    return render_template('password_change.html', form=form)
+        return redirect(url_for("login"))
+    else:
+        return render_template("password_change.html",form=form)
 
 
 
